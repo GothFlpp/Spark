@@ -1,0 +1,19 @@
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from pyspark.sql.window import *
+from pyspark.sql import Row
+
+row1 = Row(data1="2020-09-22", data2="2019-09-22", data3="2020-08-22", data4="2020-09-21")
+row2 = Row(data1="2020-08-22", data2="2021-08-22", data3="2022-07-22", data4="2022-09-03")
+
+df = spark.createDataFrame([row1, row2])
+
+df.show()
+
+def row_max_with_name(*cols):
+    cols_ = [struct(col(c).alias("value"), lit(c).alias("coluna")) for c in cols]
+    return greatest(*cols_).alias("greatest({0})".format(",".join(cols)))
+
+colunas = ("data1", "data2", "data3", "data4")
+
+df4 = df.withColumn("greatest", row_max_with_name(*colunas).coluna)
