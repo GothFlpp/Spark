@@ -10,6 +10,7 @@ df = spark.createDataFrame([row1, row2])
 
 df.show()
 
+#função que retorna struct com maior valor
 def row_max_with_name(*cols):
     cols_ = [struct(col(c).alias("value"), lit(c).alias("coluna")) for c in cols]
     return greatest(*cols_).alias("greatest({0})".format(",".join(cols)))
@@ -17,3 +18,15 @@ def row_max_with_name(*cols):
 colunas = ("data1", "data2", "data3", "data4")
 
 df4 = df.withColumn("greatest", row_max_with_name(*colunas).coluna)
+
+
+row = Row(data="2020-09-22")
+row2 = Row(data="2020SEP22")
+
+
+
+df = spark.createDataFrame([row2])
+df.show()
+
+df2 = df.withColumn("new_data", from_unixtime(unix_timestamp("data", "yyyyMMMdd"), "yyyy-MM-dd"))
+df2.show()

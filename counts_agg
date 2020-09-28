@@ -1,0 +1,14 @@
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from pyspark.sql.window import *
+from pyspark.sql import Row
+
+row1 = Row(booleano=True)
+row2 = Row(booleano=False)
+row3 = Row(booleano=False)
+row4 = Row(booleano=False)
+row5 = Row(booleano=False)
+
+df = spark.createDataFrame([row1, row2, row3, row4, row5])
+
+df.show()
