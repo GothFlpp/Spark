@@ -30,3 +30,25 @@ df.show()
 
 df2 = df.withColumn("new_data", from_unixtime(unix_timestamp("data", "yyyyMMMdd"), "yyyy-MM-dd"))
 df2.show()
+
+
+
+df5 = (
+    df.withColumn("now", to_timestamp(lit("2020-09-28 17:34:00"))).select("now")
+        .withColumn("ontem", to_timestamp(lit("2020-09-28 01:47:00")))
+        .withColumn("diff", datediff("now", "ontem"))
+)
+
+df5.show(truncate = False)
+
+
+df6 = (df5
+    .withColumn("now", col("now").cast(LongType()))
+    .withColumn("ontem", col("ontem").cast(LongType()))
+    .withColumn("diff_secs", col("now") - col("ontem"))
+    .withColumn("diff_minutes", round((col("diff_secs") / 60), 2))
+    .withColumn("diff_hours", round((col("diff_minutes") / 60), 2))
+
+    )
+
+df6.show(truncate = False)
