@@ -3,12 +3,15 @@ from pyspark.sql.types import *
 from pyspark.sql.window import *
 from pyspark.sql import Row
 
-row1 = Row(booleano=True)
-row2 = Row(booleano=False)
-row3 = Row(booleano=False)
-row4 = Row(booleano=False)
-row5 = Row(booleano=False)
+row1 = Row(id=1, value=2, value2=5, booleano=True)
+row2 = Row(id=2, value=2, value2=5, booleano=False)
+row3 = Row(id=3, value=2, value2=5, booleano=False)
+row4 = Row(id=4, value=2, value2=5, booleano=False)
+row5 = Row(id=5, value=2, value2=5, booleano=False)
 
 df = spark.createDataFrame([row1, row2, row3, row4, row5])
 
 df.show()
+
+
+df.cube("id").agg(grouping("id"), sum("value"), avg("value2")).orderBy("id").show()
