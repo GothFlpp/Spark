@@ -15,6 +15,21 @@ df1 = spark.createDataFrame([row1, row2, row3, row4, row5, row6])
 
 df2 = spark.createDataFrame([row4, row5, row6])
 
+df3 = spark.createDataFrame([row1, row2, row3])
+
+key12 = df1["id"] == df2["id"]
+key23 = df2["id"] == df3["id"]
+key233 = coalesce(df2["id"], df1["id"]) == df3["id"]
+
+df_join = (
+    df1
+        .join(df2, key12, "full_outer")
+        .join(df3, key233, "full_outer")
+
+)
+
+df_join.show()
+
 key = df1["id"] == df2["id"]
 
 df_left_anti = (
