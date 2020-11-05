@@ -2,16 +2,40 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.window import *
 from pyspark.sql import Row
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from pyspark.sql.window import *
+from pyspark.sql import Row
 
-row1 = Row(id=1, value=2, value2=5, booleano=True)
-row2 = Row(id=2, value=2, value2=5, booleano=False)
-row3 = Row(id=3, value=2, value2=5, booleano=False)
-row4 = Row(id=4, value=2, value2=5, booleano=False)
-row5 = Row(id=5, value=2, value2=5, booleano=False)
+df = spark.createDataFrame([(([1, 2, 3], [2, 3, 4]))], ['vals1', 'vals2'])
+df2 = df.select(arrays_zip(df.vals1, df.vals2).alias('zipped'))
 
-df = spark.createDataFrame([row1, row2, row3, row4, row5])
+df2.show()
 
-df.show()
+df3 = df2.withColumn("exploded", explode_outer("zipped"))
+
+df3.show()
+
+schema = df3.schema
+df4 = df3
+for row in schema:
+    if row.name == "exploded":
+        coluna = []
+        for subrow in row.dataType:
+            if subrow.name != "vals2":
+                coluna.append(subrow.name)
+                df4 = df4.withColumn(f"{subrow.name}", col(f"{row.name}.{subrow.name}"))
+                df4.show() 
+        df4 = df4.withColumn("new_struct", struct(coluna))
+        df4.show()
+
+df5 = (
+    df4
+        .groupBy(col("zipped").alias("old"))
+            .agg(collect_list("new_struct").alias("zipped"))
+            .drop("old")
+)
+df5.show()
 
 
-df.cube("id").agg(grouping("id"), sum("value"), avg("value2")).orderBy("id").show()
+
