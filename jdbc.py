@@ -16,3 +16,4 @@ df = (
         .load()
 )
 
+export SPARK_CLASSPATH="/home/flpp/Downloads/ojdbc7.jar"

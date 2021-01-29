@@ -1,0 +1,27 @@
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from pyspark.sql.window import *
+from pyspark.sql import *
+
+row1 = Row(idsku=1, idlojista="A", valor=100)
+row2 = Row(idsku=1, idlojista="B", valor=100)
+row3 = Row(idsku=2, idlojista="A", valor=200)
+row4 = Row(idsku=2, idlojista="B", valor=200)
+row5 = Row(idsku=1, idlojista="C", valor=100)
+row6 = Row(idsku=3, idlojista="C", valor=300)
+row7 = Row(idsku=3, idlojista="C", valor=300)
+
+df1 = spark.createDataFrame([row1, row2, row3, row4, row5, row6, row7])
+
+df1.show()
+
+window_valor = Window.partitionBy("idsku", "idlojista")
+
+df2 = (
+    df1
+        .withColumn("QtSkuVendido", count("idsku").over(window_valor))
+        .withColumn("VrSkuVendido", sum("valor").over(window_valor))
+
+)
+
+df2.show()
