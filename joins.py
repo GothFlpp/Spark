@@ -11,7 +11,18 @@ row5 = Row(id=5)
 row6 = Row(id=6)
 row7 = Row(id=7)
 
-df1 = spark.createDataFrame([row1, row2, row3, row4, row5, row6])
+data_proc = "2021-02-22 13:00:00"
+
+df1 = (
+    spark.createDataFrame([row1, row2, row3, row4, row5, row6])
+        .withColumn("data", (lit("9902")))
+        .withColumn("unix", unix_timestamp("data", "yyMM"))
+)
+
+df1.show()
+
+
+
 
 df2 = spark.createDataFrame([row4, row5, row6])
 
